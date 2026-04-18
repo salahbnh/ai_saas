@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useUser, UserButton } from "@clerk/nextjs";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Menu,
@@ -17,6 +18,7 @@ import {
   Mic,
   Video,
   Sparkles,
+  LayoutDashboard,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
@@ -36,12 +38,11 @@ const tools = [
 const navLinks = [
   { name: "Features", href: "#features" },
   { name: "Pricing", href: "/pricing" },
+  { name: "Docs", href: "/docs" },
   { name: "Blog", href: "/blog" },
   { name: "Changelog", href: "/changelog" },
   { name: "About", href: "/about" },
   { name: "Contact", href: "/contact" },
-  { name: "Privacy", href: "/privacy" },
-  { name: "Terms", href: "/terms" },
 ];
 
 export function Navbar() {
@@ -49,6 +50,7 @@ export function Navbar() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isToolsOpen, setIsToolsOpen] = useState(false);
   const pathname = usePathname();
+  const { isSignedIn, isLoaded } = useUser();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 10);
@@ -160,19 +162,40 @@ export function Navbar() {
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <div className="hidden items-center gap-2 md:flex">
-            <Link href="/sign-in">
-              <Button variant="ghost" size="default" className="text-[15px] font-semibold cursor-pointer">
-                Sign In
-              </Button>
-            </Link>
-            <Link href="/sign-up">
-              <Button
-                size="default"
-                className="text-[15px] font-semibold bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 cursor-pointer shadow-lg shadow-primary/25"
-              >
-                Get Started Free
-              </Button>
-            </Link>
+            {isLoaded && isSignedIn ? (
+              <>
+                <Link href="/dashboard">
+                  <Button variant="ghost" size="default" className="text-[15px] font-semibold cursor-pointer gap-1.5">
+                    <LayoutDashboard className="h-4 w-4" />
+                    Dashboard
+                  </Button>
+                </Link>
+                <UserButton
+                  afterSignOutUrl="/"
+                  appearance={{
+                    elements: {
+                      avatarBox: "h-9 w-9",
+                    },
+                  }}
+                />
+              </>
+            ) : (
+              <>
+                <Link href="/sign-in">
+                  <Button variant="ghost" size="default" className="text-[15px] font-semibold cursor-pointer">
+                    Sign In
+                  </Button>
+                </Link>
+                <Link href="/sign-up">
+                  <Button
+                    size="default"
+                    className="text-[15px] font-semibold bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 cursor-pointer shadow-lg shadow-primary/25"
+                  >
+                    Get Started Free
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile toggle */}
@@ -233,14 +256,25 @@ export function Navbar() {
               ))}
               <div className="my-2 border-t" />
               <div className="flex gap-2 px-3 pt-1">
-                <Link href="/sign-in" className="flex-1">
-                  <Button variant="outline" className="w-full cursor-pointer">
-                    Sign In
-                  </Button>
-                </Link>
-                <Link href="/sign-up" className="flex-1">
-                  <Button className="w-full cursor-pointer">Get Started</Button>
-                </Link>
+                {isLoaded && isSignedIn ? (
+                  <Link href="/dashboard" className="flex-1">
+                    <Button className="w-full cursor-pointer gap-1.5">
+                      <LayoutDashboard className="h-4 w-4" />
+                      Dashboard
+                    </Button>
+                  </Link>
+                ) : (
+                  <>
+                    <Link href="/sign-in" className="flex-1">
+                      <Button variant="outline" className="w-full cursor-pointer">
+                        Sign In
+                      </Button>
+                    </Link>
+                    <Link href="/sign-up" className="flex-1">
+                      <Button className="w-full cursor-pointer">Get Started</Button>
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </motion.div>
