@@ -66,10 +66,11 @@ model User {
   updatedAt DateTime @updatedAt
 
   subscription  Subscription?
-  conversations Conversation[]
-  documents     Document[]
-  apiKeys       ApiKey[]
-  feedback      Feedback[]
+  conversations    Conversation[]
+  documents        Document[]
+  apiKeys          ApiKey[]
+  feedback         Feedback[]
+  imageGenerations ImageGeneration[]
 
   @@index([clerkId])
   @@index([email])
@@ -153,6 +154,22 @@ model ApiKey {
 
   @@index([userId])
   @@index([key])
+}
+
+model ImageGeneration {
+  id        String   @id @default(cuid())
+  userId    String
+  prompt    String
+  style     String   @default("vivid")
+  size      String   @default("1024x1024")
+  quality   String   @default("standard")
+  imageUrl  String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
 }
 
 model Feedback {

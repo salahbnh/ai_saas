@@ -22,6 +22,14 @@ export const chatRateLimit = new Ratelimit({
   prefix: "ratelimit:chat",
 });
 
+// Image generation rate limiter: 5 per minute
+export const imageRateLimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(5, "1 m"),
+  analytics: true,
+  prefix: "ratelimit:image",
+});
+
 // Document upload rate limiter: 10 uploads per hour
 export const uploadRateLimit = new Ratelimit({
   redis,

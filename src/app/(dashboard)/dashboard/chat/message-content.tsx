@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import ReactMarkdown from "react-markdown";
+import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import { Check, Copy } from "lucide-react";
@@ -11,36 +11,41 @@ import { cn } from "@/lib/utils";
  * Renders a markdown assistant/user message with syntax-highlighted code
  * blocks and a copy-to-clipboard button on each block.
  */
+// Stable component map — extracted to module scope so the object reference
+// never changes between renders. Prevents react-markdown from re-diffing its
+// AST on every streaming token, which was the primary cause of the
+// "Maximum update depth exceeded" error during streaming.
+const MD_COMPONENTS: Partial<Components> = {
+  pre: ({ children }) => <CodeBlock>{children}</CodeBlock>,
+  code: ({ className, children }) => (
+    <code
+      className={cn(
+        className,
+        !className && "rounded bg-muted px-1 py-0.5 font-mono text-[0.85em]",
+      )}
+    >
+      {children}
+    </code>
+  ),
+  a: ({ href, children }) => (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-primary underline-offset-2 hover:underline"
+    >
+      {children}
+    </a>
+  ),
+};
+
 export function MessageContent({ content }: { content: string }) {
   return (
     <div className="prose prose-sm dark:prose-invert max-w-none break-words prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0 prose-code:before:hidden prose-code:after:hidden">
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[[rehypeHighlight, { ignoreMissing: true }]]}
-        components={{
-          pre: ({ children }) => <CodeBlock>{children}</CodeBlock>,
-          code: ({ className, children }) => (
-            <code
-              className={cn(
-                className,
-                !className &&
-                  "rounded bg-muted px-1 py-0.5 font-mono text-[0.85em]",
-              )}
-            >
-              {children}
-            </code>
-          ),
-          a: ({ href, children }) => (
-            <a
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary underline-offset-2 hover:underline"
-            >
-              {children}
-            </a>
-          ),
-        }}
+        components={MD_COMPONENTS}
       >
         {content}
       </ReactMarkdown>

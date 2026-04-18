@@ -3,7 +3,7 @@ export const appConfig = {
   description: "Production-ready AI SaaS starter template",
   url: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
   logo: "/logo.svg",
-  supportEmail: "support@example.com",
+  supportEmail: "bounhsalah@gmail.com",
   links: {
     twitter: "https://twitter.com/yourhandle",
     github: "https://github.com/yourrepo",
@@ -19,6 +19,12 @@ export const appConfig = {
     enableUsageAnalytics: true,
     enableFeedback: true,
     enableApiKeys: true,
+    enableImage: true,
+    enableCode: false,
+    enableTranslator: false,
+    enableSummarizer: false,
+    enableVoice: false,
+    enableVideo: false,
   },
 } as const;
 

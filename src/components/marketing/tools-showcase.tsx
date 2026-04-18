@@ -25,7 +25,7 @@ const tools = [
     icon: MessageSquare,
     badge: "Popular",
     color: "from-emerald-500 to-green-600",
-    href: "/dashboard/tools/chat",
+    href: "/dashboard/chat",
   },
   {
     name: "AI Writer",
@@ -34,7 +34,7 @@ const tools = [
     icon: PenLine,
     badge: "New",
     color: "from-teal-500 to-cyan-500",
-    href: "/dashboard/tools/writer",
+    href: "/dashboard/writer",
   },
   {
     name: "AI Image",
@@ -43,52 +43,52 @@ const tools = [
     icon: ImageIcon,
     badge: "Hot",
     color: "from-violet-500 to-indigo-600",
-    href: "/dashboard/tools/image",
+    href: "/dashboard/image",
   },
   {
     name: "AI Code",
     description:
       "Generate, debug, and explain code in 50+ languages. Built-in syntax highlighting and diff view.",
     icon: Code2,
-    badge: null,
+    badge: "Add-on",
     color: "from-green-500 to-lime-600",
-    href: "/dashboard/tools/code",
+    href: "/dashboard/code",
   },
   {
     name: "AI Translator",
     description:
       "Translate text between 100+ languages with tone and formality controls. Preserves context.",
     icon: Languages,
-    badge: null,
+    badge: "Add-on",
     color: "from-sky-500 to-blue-600",
-    href: "/dashboard/tools/translator",
+    href: "/dashboard/translator",
   },
   {
     name: "AI Summarizer",
     description:
       "Summarize articles, PDFs, and documents into structured, actionable key points instantly.",
     icon: FileText,
-    badge: null,
+    badge: "Add-on",
     color: "from-slate-500 to-zinc-600",
-    href: "/dashboard/tools/summarizer",
+    href: "/dashboard/summarizer",
   },
   {
     name: "AI Voice",
     description:
       "Convert text to natural speech or transcribe audio to text. Multiple voices and accents.",
     icon: Mic,
-    badge: "New",
+    badge: "Add-on",
     color: "from-pink-500 to-rose-600",
-    href: "/dashboard/tools/voice",
+    href: "/dashboard/voice",
   },
   {
     name: "AI Video",
     description:
       "Generate short videos from text prompts or images. Perfect for social content and ads.",
     icon: Video,
-    badge: "Hot",
+    badge: "Add-on",
     color: "from-amber-500 to-orange-600",
-    href: "/dashboard/tools/video",
+    href: "/dashboard/video",
   },
 ];
 
@@ -145,7 +145,9 @@ export function ToolsShowcase() {
                           tool.badge === "New" &&
                             "bg-emerald-500/10 text-emerald-500",
                           tool.badge === "Popular" &&
-                            "bg-primary/10 text-primary"
+                            "bg-primary/10 text-primary",
+                          tool.badge === "Add-on" &&
+                            "bg-amber-500/10 text-amber-500"
                         )}
                       >
                         {tool.badge}

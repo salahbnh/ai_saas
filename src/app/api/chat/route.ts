@@ -22,6 +22,7 @@ const requestSchema = z.object({
     .min(1),
   conversationId: z.string().min(1),
   modelId: z.string().optional(),
+  apiKey: z.string().trim().min(1).optional(),
 });
 
 const SYSTEM_PROMPT = `You are NexusAI, a helpful AI assistant. Respond clearly and concisely. Use GitHub-flavored Markdown for formatting — code blocks with language tags, lists, tables, and headings when appropriate.`;
@@ -46,7 +47,7 @@ export async function POST(req: Request) {
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
-  const { messages, conversationId, modelId } = parsed.data;
+  const { messages, conversationId, modelId, apiKey: userApiKey } = parsed.data;
 
   // 3. Load conversation + verify ownership
   const conversation = await db.conversation.findUnique({
@@ -171,7 +172,7 @@ export async function POST(req: Request) {
 
   try {
     const result = await streamText({
-      model: getModel(resolvedModelId),
+      model: getModel(resolvedModelId, userApiKey),
       system: SYSTEM_PROMPT,
       messages: coreMessages,
       onFinish: async ({ text, usage }) => {

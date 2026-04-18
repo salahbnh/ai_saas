@@ -16,6 +16,7 @@ export type PlanDefinition = {
     maxFileSize: number; // in MB
     apiKeysTotal: number;
     teamMembers: number;
+    imagesPerMonth: number;
     models: string[];
   };
   features: string[];
@@ -38,12 +39,14 @@ export const plans: Record<SubscriptionPlan, PlanDefinition> = {
       maxFileSize: 5,
       apiKeysTotal: 1,
       teamMembers: 1,
+      imagesPerMonth: 5,
       models: ["llama-3.1-8b-instant"],
     },
     features: [
       "100 messages per month",
       "10 conversations",
       "5 document uploads",
+      "5 image generations per month",
       "Llama 3.1 8B (fast & free)",
       "Community support",
     ],
@@ -64,16 +67,18 @@ export const plans: Record<SubscriptionPlan, PlanDefinition> = {
       maxFileSize: 25,
       apiKeysTotal: 5,
       teamMembers: 1,
+      imagesPerMonth: 50,
       models: [
         "llama-3.1-8b-instant",
         "llama-3.3-70b-versatile",
-        "gemini-2.0-flash",
+        "gemini-1.5-flash-latest",
       ],
     },
     features: [
       "2,000 messages per month",
       "100 conversations",
       "50 document uploads",
+      "50 image generations per month",
       "Llama 3.3 70B & Gemini 2.0 Flash",
       "Priority support",
       "API access",
@@ -95,10 +100,11 @@ export const plans: Record<SubscriptionPlan, PlanDefinition> = {
       maxFileSize: 100,
       apiKeysTotal: 20,
       teamMembers: 10,
+      imagesPerMonth: 500,
       models: [
         "llama-3.1-8b-instant",
         "llama-3.3-70b-versatile",
-        "gemini-2.0-flash",
+        "gemini-1.5-flash-latest",
         "gpt-4o-mini",
         "gpt-4o",
         "claude-3-5-sonnet-20241022",
@@ -108,6 +114,7 @@ export const plans: Record<SubscriptionPlan, PlanDefinition> = {
       "10,000 messages per month",
       "Unlimited conversations",
       "500 document uploads",
+      "500 image generations per month",
       "All AI models",
       "Team collaboration (up to 10)",
       "Dedicated support",

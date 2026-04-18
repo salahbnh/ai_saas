@@ -118,14 +118,28 @@ export function getModelsByProvider(provider: AIProvider): AIModel[] {
  * Resolve a model id → a LanguageModel instance from the AI SDK.
  * Throws on unknown model id or missing provider key.
  *
+ * When `userApiKey` is provided, it overrides the server-side env var
+ * for the resolved provider (BYOK — Bring Your Own Key).
+ *
  * The cast at the return site works around a TypeScript dual-package hazard:
  * each `@ai-sdk/*` provider pins its own copy of `@ai-sdk/provider`, so the
  * emitted `LanguageModelV1` shapes are structurally identical but nominally
  * different. Runtime behavior is unaffected.
  */
-export function getModel(modelId: string): LanguageModel {
+export function getModel(modelId: string, userApiKey?: string): LanguageModel {
   const modelDef = getModelDefinition(modelId);
   if (!modelDef) throw new Error(`Unknown model: ${modelId}`);
+
+  // If the user supplied their own key, build a one-off provider with it.
+  if (userApiKey) {
+    const byokProviders: Record<AIProvider, () => ReturnType<typeof createOpenAI>> = {
+      openai: () => createOpenAI({ apiKey: userApiKey }),
+      anthropic: () => createAnthropic({ apiKey: userApiKey }) as unknown as ReturnType<typeof createOpenAI>,
+      groq: () => createGroq({ apiKey: userApiKey }) as unknown as ReturnType<typeof createOpenAI>,
+      google: () => createGoogleGenerativeAI({ apiKey: userApiKey }) as unknown as ReturnType<typeof createOpenAI>,
+    };
+    return byokProviders[modelDef.provider]()(modelDef.id) as LanguageModel;
+  }
 
   const build = providers[modelDef.provider];
   if (!build) throw new Error(`No provider for: ${modelDef.provider}`);

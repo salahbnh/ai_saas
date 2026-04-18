@@ -25,6 +25,7 @@ import type { AIModel } from "@/types";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { ApiKeyInput, useUserApiKey } from "@/components/dashboard/api-key-input";
 import { ModelSelector } from "./model-selector";
 import { MessageContent } from "./message-content";
 import { createConversation, truncateConversationAt } from "./actions";
@@ -52,14 +53,19 @@ export function ChatUI({
   userName,
 }: Props) {
   const [modelId, setModelId] = useState(initialModelId);
+  const [userApiKey, setUserApiKey] = useUserApiKey();
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Memoize options so useChat doesn't reinitialize on every render — a fresh
   // object literal here triggers an internal SWR re-key → infinite loop.
   const chatBody = useMemo(
-    () => ({ conversationId, modelId }),
-    [conversationId, modelId],
+    () => ({
+      conversationId,
+      modelId,
+      ...(userApiKey.trim() ? { apiKey: userApiKey.trim() } : {}),
+    }),
+    [conversationId, modelId, userApiKey],
   );
   const handleError = useCallback((err: Error) => {
     try {
@@ -118,6 +124,14 @@ export function ChatUI({
     el.style.height = Math.min(el.scrollHeight, 200) + "px";
   }, [input]);
 
+  // Keep a ref to messages so callbacks can read the latest value without
+  // needing `messages` in their dependency array (which would break memo on
+  // every streaming token and trigger the "Maximum update depth" error).
+  const messagesRef = useRef(messages);
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
+
   // Global keyboard shortcuts.
   useEffect(() => {
     const onKey = async (e: KeyboardEvent) => {
@@ -141,9 +155,10 @@ export function ChatUI({
         return;
       }
 
-      // ⌘↑ / Ctrl+↑ → focus textarea (quick access when scrolled up)
+      // ⌘↑ / Ctrl+↑ → recall last user message into the composer
       if (mod && e.key === "ArrowUp" && !isLoading) {
-        const last = [...messages].reverse().find((m) => m.role === "user");
+        const msgs = messagesRef.current;
+        const last = [...msgs].reverse().find((m) => m.role === "user");
         if (last) {
           e.preventDefault();
           setInput(last.content);
@@ -153,18 +168,16 @@ export function ChatUI({
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [isLoading, stop, messages, setInput]);
+  }, [isLoading, stop, setInput]);
 
   const handleRegenerate = useCallback(() => {
-    // reload() asks the API for a fresh assistant response to the last user
-    // message. Our API route detects the regenerate scenario and drops the
-    // stale assistant row from the DB before streaming.
     reload();
   }, [reload]);
 
   const handleEditResend = useCallback(
     async (messageIndex: number, newContent: string) => {
-      const target = messages[messageIndex];
+      const msgs = messagesRef.current;
+      const target = msgs[messageIndex];
       if (!target || target.role !== "user") return;
 
       // 1. Truncate DB (delete target + everything after).
@@ -176,47 +189,58 @@ export function ChatUI({
       }
 
       // 2. Truncate client state to just before the edited message.
-      const trimmed = messages.slice(0, messageIndex);
+      const trimmed = msgs.slice(0, messageIndex);
       setMessages(trimmed);
 
       // 3. Append the edited message — this triggers /api/chat, which sees
       //    one extra USER message vs. DB and persists it.
       await append({ role: "user", content: newContent });
     },
-    [messages, conversationId, setMessages, append],
+    [conversationId, setMessages, append],
   );
 
   const isEmpty = messages.length === 0;
   const firstName = userName?.split(" ")[0] ?? null;
 
   // Index of the last assistant message (used to show "Regenerate" only on it).
+  // Depends on messages.length (primitive) — not the messages ref — so it only
+  // recomputes when a message is added/removed, not on every streaming token.
   const lastAssistantIndex = useMemo(() => {
     for (let i = messages.length - 1; i >= 0; i--) {
       if (messages[i].role === "assistant") return i;
     }
     return -1;
-  }, [messages]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messageCount]);
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between border-b px-4 py-2.5">
+      <div className="flex flex-wrap items-center gap-3 border-b px-4 py-2.5">
         <ModelSelector
           models={models}
           value={modelId}
           onChange={setModelId}
           disabled={isLoading}
         />
-        {isLoading && (
-          <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-            <Loader2 className="h-3 w-3 animate-spin" />
-            Thinking…
-            <kbd className="ml-1 rounded border bg-muted px-1 font-mono text-[10px]">
-              Esc
-            </kbd>
-            to stop
-          </span>
-        )}
+        <div className="flex flex-1 items-center justify-end gap-3">
+          <ApiKeyInput
+            value={userApiKey}
+            onChange={setUserApiKey}
+            disabled={isLoading}
+            className="w-full max-w-[260px] [&_label]:hidden [&_p]:hidden"
+          />
+          {isLoading && (
+            <span className="flex shrink-0 items-center gap-1.5 text-[11px] text-muted-foreground">
+              <Loader2 className="h-3 w-3 animate-spin" />
+              Thinking…
+              <kbd className="ml-1 rounded border bg-muted px-1 font-mono text-[10px]">
+                Esc
+              </kbd>
+              to stop
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Messages */}
