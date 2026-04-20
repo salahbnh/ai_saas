@@ -25,14 +25,14 @@ import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { cn } from "@/lib/utils";
 
 const tools = [
-  { name: "AI Chat", href: "/dashboard/tools/chat", icon: MessageSquare, badge: "Popular", color: "text-emerald-500", bg: "bg-emerald-500/10" },
-  { name: "AI Writer", href: "/dashboard/tools/writer", icon: PenLine, badge: "New", color: "text-teal-500", bg: "bg-teal-500/10" },
-  { name: "AI Image", href: "/dashboard/tools/image", icon: Image, badge: "Hot", color: "text-violet-500", bg: "bg-violet-500/10" },
-  { name: "AI Code", href: "/dashboard/tools/code", icon: Code2, badge: null, color: "text-lime-500", bg: "bg-lime-500/10" },
-  { name: "AI Translator", href: "/dashboard/tools/translator", icon: Languages, badge: null, color: "text-sky-500", bg: "bg-sky-500/10" },
-  { name: "AI Summarizer", href: "/dashboard/tools/summarizer", icon: FileText, badge: null, color: "text-slate-400", bg: "bg-slate-400/10" },
-  { name: "AI Voice", href: "/dashboard/tools/voice", icon: Mic, badge: "New", color: "text-pink-500", bg: "bg-pink-500/10" },
-  { name: "AI Video", href: "/dashboard/tools/video", icon: Video, badge: "Hot", color: "text-amber-500", bg: "bg-amber-500/10" },
+  { name: "AI Chat", href: "/dashboard/chat", icon: MessageSquare, badge: "Popular", color: "text-emerald-500", bg: "bg-emerald-500/10" },
+  { name: "AI Writer", href: "/dashboard/writer", icon: PenLine, badge: "New", color: "text-teal-500", bg: "bg-teal-500/10" },
+  { name: "AI Image", href: "/dashboard/image", icon: Image, badge: "Hot", color: "text-violet-500", bg: "bg-violet-500/10" },
+  { name: "AI Code", href: "/dashboard/code", icon: Code2, badge: null, color: "text-lime-500", bg: "bg-lime-500/10" },
+  { name: "AI Translator", href: "/dashboard/translator", icon: Languages, badge: null, color: "text-sky-500", bg: "bg-sky-500/10" },
+  { name: "AI Summarizer", href: "/dashboard/summarizer", icon: FileText, badge: null, color: "text-slate-400", bg: "bg-slate-400/10" },
+  { name: "AI Voice", href: "/dashboard/voice", icon: Mic, badge: "New", color: "text-pink-500", bg: "bg-pink-500/10" },
+  { name: "AI Video", href: "/dashboard/video", icon: Video, badge: "Hot", color: "text-amber-500", bg: "bg-amber-500/10" },
 ];
 
 const navLinks = [

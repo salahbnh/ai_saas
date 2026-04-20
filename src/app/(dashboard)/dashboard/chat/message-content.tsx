@@ -41,7 +41,7 @@ const MD_COMPONENTS: Partial<Components> = {
 
 export function MessageContent({ content }: { content: string }) {
   return (
-    <div className="prose prose-sm dark:prose-invert max-w-none break-words prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0 prose-code:before:hidden prose-code:after:hidden">
+    <div className="prose prose-sm dark:prose-invert max-w-full break-words overflow-hidden prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0 prose-code:before:hidden prose-code:after:hidden">
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[[rehypeHighlight, { ignoreMissing: true }]]}

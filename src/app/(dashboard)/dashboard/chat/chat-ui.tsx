@@ -407,7 +407,7 @@ const MessageBubble = memo(function MessageBubble({
 
       <div
         className={cn(
-          "flex min-w-0 max-w-[85%] flex-col gap-1.5",
+          "flex min-w-0 max-w-[85%] overflow-hidden flex-col gap-1.5",
           isUser ? "items-end" : "items-start",
         )}
       >
