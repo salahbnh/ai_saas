@@ -5,6 +5,7 @@ import { plans, getPlan } from "@/config/plans";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { startCheckout, openBillingPortal } from "./actions";
+import { SyncSubscriptionButton } from "./sync-button";
 
 export default async function BillingSettingsPage({
   searchParams,
@@ -31,11 +32,14 @@ export default async function BillingSettingsPage({
 
   return (
     <div className="mx-auto max-w-5xl space-y-6 p-6 lg:p-8">
-      <div>
-        <h1 className="font-heading text-2xl font-semibold">Billing</h1>
-        <p className="text-sm text-muted-foreground">
-          Manage your plan, payment method, and billing history.
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <div>
+          <h1 className="font-heading text-2xl font-semibold">Billing</h1>
+          <p className="text-sm text-muted-foreground">
+            Manage your plan, payment method, and billing history.
+          </p>
+        </div>
+        {hasPaidSubscription && <SyncSubscriptionButton />}
       </div>
 
       {searchParams?.success && (
